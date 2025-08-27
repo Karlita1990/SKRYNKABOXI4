@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="game_title">Гра "Скриньки"</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #2e2c4d;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #55a630;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #408823;
+        }
+        input, select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #4a4a6b;
+            background-color: #3b3a5b;
+            color: #e0e0e0;
+            margin: 5px;
+            width: calc(100% - 10px);
+            box-sizing: border-box;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 8px;
+            width: 60px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .card.hearts, .card.diamonds {
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 data-i18n="game_title">Гра "Скриньки"</h1>
+
+        <div id="lobby">
+            <!-- Вибір мови -->
+            <label data-i18n="languageLabel" for="langSelect">Мова:</label>
+            <select id="langSelect">
+                <option value="uk">Українська</option>
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+            </select>
+            
+            <p data-i18n="lobby_prompt">Виберіть ім'я та кімнату для гри.</p>
+            <input type="text" id="player-name-input" data-i18n-placeholder="placeholder_name" placeholder="Ваше ім'я">
+            <input type="text" id="room-id-input" data-i18n-placeholder="placeholder_room_id" placeholder="ID кімнати">
+            <button onclick="joinRoom()" data-i18n="join_button">Приєднатися / Створити кімнату</button>
+            <p id="lobby-message"></p>
+        </div>
+
+        <div id="game" style="display: none;">
+            <div class="game-state-message" id="game-status" data-i18n="status_waiting_for_players">Очікування на гравців...</div>
+            
+            <div id="controls">
+                <div id="game-actions" style="display: none;">
+                    <p data-i18n="your_turn_prompt">Ваш хід, <span id="current-player-name"></span>! Виберіть гравця та карту для запиту.</p>
+                    <select id="target-player-select"></select>
+                    <select id="card-rank-select">
+                        <option value="" data-i18n="select_value">Вибрати значення</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="J">J</option>
+                        <option value="Q">Q</option>
+                        <option value="K">K</option>
+                        <option value="A">A</option>
+                    </select>
+                    <button onclick="askForCard()" data-i18n="ask_button">Запитати</button>
+                </div>
+
+                <div id="guess-count" style="display: none;">
+                    <p data-i18n="guess_count_prompt">Вгадайте, скільки карт з цим рангом є у вашого суперника?</p>
+                    <select id="card-count-select">  
+                        <option value="" data-i18n="select_value">Вибрати значення</option>  
+                        <option value="1">1</option>  
+                        <option value="2">2</option>  
+                        <option value="3">3</option>   
+                    </select>   
+                    <button id="submit-guess-count-btn" data-i18n="submit_guess_button">Відправити</button>
+                </div>
+                
+                <div id="guess-suits-form" style="display: none;">
+                    <p data-i18n="guess_suits_prompt">Скільки мастей ви вгадаєте?</p>
+                    <div id="suits-checkboxes">
+                        <label><input type="checkbox" name="suit" value="♥"> ♥</label>
+                        <label><input type="checkbox" name="suit" value="♦"> ♦</label>
+                        <label><input type="checkbox" name="suit" value="♣"> ♣</label>
+                        <label><input type="checkbox" name="suit" value="♠"> ♠</label>
+                    </div>
+                    <button onclick="guessSuits()" data-i18n="guess_suits_button">Вгадати масті</button>
+                </div>
+
+                <div id="response-buttons" style="display: none;">
+                    <p data-i18n="response_prompt">Гравець <span id="asking-player-name"></span> запитує карту <span id="asked-card-rank"></span>. У вас вона є?</p>
+                    <button onclick="respondToAsk('yes')" data-i18n="yes_button">Так</button>
+                    <button onclick="respondToAsk('no')" data-i18n="no_button">Ні</button>
+                </div>
+            </div>
+
+            <div id="game-info">
+                <button id="startGameBtn" onclick="startGame()" data-i18n="start_game_button">Розпочати гру</button>
+                <p><strong data-i18n="your_cards">Ваші карти:</strong></p>
+                <div id="player-hand" class="card-container"></div>
+                <p><strong data-i18n="collected_boxes">Зібрані скриньки:</strong></p>
+                <div id="collected-boxes" class="collected-boxes"></div>
+                <p><strong data-i18n="deck">Колода:</strong> <span id="deck-size"></span> <span data-i18n="cards_unit">карт</span></p>
+                <p><strong data-i18n="players">Гравці:</strong></p>
+                <ul id="players-list"></ul>
+            </div>
+        </div>
+        
+        <div class="message-box">
+            <h4 data-i18n="game_log_title">Журнал гри:</h4>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="translation.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
