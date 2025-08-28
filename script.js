@@ -49,64 +49,6 @@
     telegramUser = translateText('test_player');
 }
 
-
-
-        // Оновлена функція updateUI
-function updateUI(state, myHand) {
-    // Оновлення списку гравців з їхніми скриньками
-    elements.playersList.innerHTML = '';
-    state.players.forEach(p => {
-        const li = document.createElement('li');
-
-        // Формуємо текст з інформацією про зібрані скриньки
-        const collectedSetsText = p.collected_sets.length > 0
-            ? ` (${p.collected_sets.join(', ')})`
-            : '';
-
-        li.textContent = `${p.name} (${p.is_turn ? translateText('status_turn') : translateText('status_waiting')}) - ${translateText('collected_boxes')}: ${p.collected_boxes}${collectedSetsText}`;
-        elements.playersList.appendChild(li);
-    });
-
-    // Оновлення імені поточного гравця
-    elements.currentPlayerName.textContent = state.current_turn;
-
-    // Використовуємо myHand, переданий як аргумент
-    elements.playerHand.innerHTML = '';
-    if (myHand && myHand.length > 0) {
-        myHand.forEach(card => {
-            const div = document.createElement('div');
-            // Перевіряємо масті для кольору
-            const isRedSuit = card.includes('♥') || card.includes('♦');
-            div.className = `card ${isRedSuit ? 'hearts' : 'clubs'}`;
-            div.textContent = card;
-            elements.playerHand.appendChild(div);
-        });
-    }
-
-    // Оновлення розміру колоди
-    elements.deckSize.textContent = state.deck_size;
-
-    // Оновлення статусу гри з локалізацією
-    elements.gameStatus.textContent = state.game_started 
-        ? translateText('status_game_started', { playerName: state.current_turn })
-        : translateText('status_waiting_for_players_count', { 
-            count: state.players.length, 
-            max: 6 
-        });
-
-            handleStartGameButton(state);
-            hideAllControls();
-
-            const myPlayerState = state.players.find(p => p.name === myName);
-            if (state.game_started && state.current_turn === myName) {
-                elements.gameActions.style.display = 'block';
-                elements.targetPlayerSelect.innerHTML = state.players
-                    .filter(p => p.name !== myName)
-                    .map(p => `<option value="${p.name}">${p.name}</option>`)
-                    .join('');
-            }
-        }
-
         function handleStartGameButton(state) {
             const isRoomAdmin = state.room_admin === myName;
             
