@@ -126,6 +126,7 @@ function connectWebSocket() {
                 break;
             case 'update_state':
                 updateUI(data.state, data.state.my_hand);
+				updateAllText(); 
                 break;
             case 'start_game':
                 logMessage('game_started');
