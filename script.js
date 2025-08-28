@@ -1,4 +1,4 @@
-             const tg = window.Telegram.WebApp;
+         const tg = window.Telegram.WebApp;
         const WS_URL = "wss://telegram-webapp-beispiel.onrender.com"; // !!! Змініть на публічну адресу вашого сервера !!!
         let socket;
         let telegramUser = '';
@@ -76,9 +76,10 @@
         function joinRoom() {
     myName = elements.playerNameInput.value.trim();
     myRoomId = elements.roomIdInput.value.trim();
+    const language = document.getElementById('langSelect').value;
 
     if (myName && myRoomId) {
-        connectWebSocket();
+        connectWebSocket(language);
     } else {
         elements.lobbyMessage.textContent = translateText('error_enter_name_and_room');
     }
@@ -112,12 +113,12 @@
         }
 		
         // Оновлена функція connectWebSocket
-function connectWebSocket() {
+function connectWebSocket(language = 'uk') {
     socket = new WebSocket(WS_URL);
     
     socket.onopen = () => {
         logMessage('connected_to_server');
-        const message_to_send = { type: 'join', name: myName, room: myRoomId };
+        const message_to_send = { type: 'join', name: myName, room: myRoomId, language: language };
         socket.send(JSON.stringify(message_to_send));
     };
     
@@ -141,25 +142,25 @@ function connectWebSocket() {
                 handleGameOver(data);
                 break;
             case 'ask_response_needed':
-    hideAllControls();
-    elements.responseButtons.style.display = 'block';
+                hideAllControls();
+                elements.responseButtons.style.display = 'block';
     
-    // Перевіряємо, чи сервер надіслав коректні дані
-    if (data.asking_player && data.card_rank) {
-        elements.askingPlayerName.textContent = data.asking_player;
-        elements.askedCardRank.textContent = data.card_rank;
+                // Перевіряємо, чи сервер надіслав коректні дані
+                if (data.asking_player && data.card_rank) {
+                    elements.askingPlayerName.textContent = data.asking_player;
+                    elements.askedCardRank.textContent = data.card_rank;
         
-        // Безпосереднє оновлення тексту
-        document.querySelectorAll('[data-i18n="response_prompt"]').forEach(element => {
-            element.textContent = translateText('response_prompt', {
-                askingPlayer: data.asking_player,
-                cardRank: data.card_rank
-            });
-        });
-    } else {
-        console.error('Некоректні дані запиту:', data);
-    }
-    break;
+                    // Безпосереднє оновлення тексту
+                    document.querySelectorAll('[data-i18n="response_prompt"]').forEach(element => {
+                        element.textContent = translateText('response_prompt', {
+                            askingPlayer: data.asking_player,
+                            cardRank: data.card_rank
+                        });
+                    });
+                } else {
+                        console.error('Некоректні дані запиту:', data);
+                        }
+                break;
             case 'guess_count_needed':
                 hideAllControls();
                 elements.guessCount.style.display = 'block';
@@ -169,7 +170,12 @@ function connectWebSocket() {
                 elements.guessSuitsForm.style.display = 'block';
                 break;
             case 'log':
-                logMessage(data.message);
+                // Обробка локалізованих повідомлень
+                if (data.translation_key) {
+                    logMessage(data.translation_key, data.params || {});
+                } else if (data.message) {
+                    logMessage(data.message);
+                }
                 break;
             case 'error':
                 logMessage('error_message', { message: data.message });
