@@ -1,4 +1,4 @@
-        const tg = window.Telegram.WebApp;
+             const tg = window.Telegram.WebApp;
         const WS_URL = "wss://telegram-webapp-beispiel.onrender.com"; // !!! Змініть на публічну адресу вашого сервера !!!
         let socket;
         let telegramUser = '';
@@ -49,6 +49,11 @@
     telegramUser = translateText('test_player');
 }
 
+
+
+        // Оновлена функція updateUI
+
+
         function handleStartGameButton(state) {
             const isRoomAdmin = state.room_admin === myName;
             
@@ -65,6 +70,7 @@
             //elements.guessCount.style.display = 'none';
             //elements.guessSuitsForm.style.display = 'none';
             elements.responseButtons.style.display = 'none';
+
         }
 
         function joinRoom() {
@@ -135,13 +141,25 @@ function connectWebSocket() {
                 handleGameOver(data);
                 break;
             case 'ask_response_needed':
-                hideAllControls();
-                elements.responseButtons.style.display = 'block';
-                elements.askingPlayerName.textContent = data.asking_player;
-                elements.askedCardRank.textContent = data.card_rank;
-                // Оновлюємо текст з параметрами
-                updateAllText();
-                break;
+    hideAllControls();
+    elements.responseButtons.style.display = 'block';
+    
+    // Перевіряємо, чи сервер надіслав коректні дані
+    if (data.asking_player && data.card_rank) {
+        elements.askingPlayerName.textContent = data.asking_player;
+        elements.askedCardRank.textContent = data.card_rank;
+        
+        // Безпосереднє оновлення тексту
+        document.querySelectorAll('[data-i18n="response_prompt"]').forEach(element => {
+            element.textContent = translateText('response_prompt', {
+                askingPlayer: data.asking_player,
+                cardRank: data.card_rank
+            });
+        });
+    } else {
+        console.error('Некоректні дані запиту:', data);
+    }
+    break;
             case 'guess_count_needed':
                 hideAllControls();
                 elements.guessCount.style.display = 'block';
