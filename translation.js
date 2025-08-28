@@ -290,27 +290,25 @@ function updateAllText() {
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.getAttribute('data-i18n');
             if (key) {
-                // Спеціальна обробка для динамічних текстів
                 if (key === 'your_turn_prompt') {
                     const currentPlayerName = document.getElementById('current-player-name');
-                    if (currentPlayerName && currentPlayerName.textContent) {
-                        element.textContent = translateText(key, {
-                            playerName: currentPlayerName.textContent
-                        });
-                    } else {
-                        element.textContent = translateText(key, {
-                            playerName: translateText('default_player')
-                        });
-                    }
+                    const playerName = currentPlayerName?.textContent || myName || translateText('default_player');
+                    element.textContent = translateText(key, { playerName: playerName });
+                    
                 } else if (key === 'response_prompt') {
                     const askingPlayerName = document.getElementById('asking-player-name');
                     const askedCardRank = document.getElementById('asked-card-rank');
-                    if (askingPlayerName && askedCardRank && askingPlayerName.textContent && askedCardRank.textContent) {
+                    const askingPlayer = askingPlayerName?.textContent || '';
+                    const cardRank = askedCardRank?.textContent || '';
+                    
+                    // Оновлюємо тільки якщо є дані
+                    if (askingPlayer || cardRank) {
                         element.textContent = translateText(key, {
-                            askingPlayer: askingPlayerName.textContent,
-                            cardRank: askedCardRank.textContent
+                            askingPlayer: askingPlayer,
+                            cardRank: cardRank
                         });
                     }
+                    
                 } else {
                     element.textContent = translateText(key);
                 }
