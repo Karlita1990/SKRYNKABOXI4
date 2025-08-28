@@ -285,49 +285,49 @@ function translateText(key, params = {}) {
 
 // Функція для оновлення всього інтерфейсу
 function updateAllText() {
-	
-	try {
-	
-    // Оновлення всіх елементів з атрибутом data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        element.textContent = translateText(key);
-    });
-    
-    // Оновлення placeholder'ів
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        element.placeholder = translateText(key);
-    });
-    
-    // Оновлення динамічних текстів з параметрами
-    const currentPlayerName = document.getElementById('current-player-name');
-    if (currentPlayerName.textContent) {
-        const askingPlayerName = document.getElementById('asking-player-name');
-        const askedCardRank = document.getElementById('asked-card-rank');
-        
-        if (askingPlayerName.textContent && askedCardRank.textContent) {
-            document.querySelectorAll('[data-i18n="response_prompt"]').forEach(element => {
-                element.textContent = translateText('response_prompt', {
-                    askingPlayer: askingPlayerName.textContent,
-                    cardRank: askedCardRank.textContent
-                });
-            });
-        }
-        
-        document.querySelectorAll('[data-i18n="your_turn_prompt"]').forEach(element => {
-            element.textContent = translateText('your_turn_prompt', {
-                playerName: currentPlayerName.textContent
-            });
+    try {
+        // Оновлення всіх елементів з атрибутом data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (key) {
+                // Спеціальна обробка для динамічних текстів
+                if (key === 'your_turn_prompt') {
+                    const currentPlayerName = document.getElementById('current-player-name');
+                    if (currentPlayerName && currentPlayerName.textContent) {
+                        element.textContent = translateText(key, {
+                            playerName: currentPlayerName.textContent
+                        });
+                    } else {
+                        element.textContent = translateText(key, {
+                            playerName: translateText('default_player')
+                        });
+                    }
+                } else if (key === 'response_prompt') {
+                    const askingPlayerName = document.getElementById('asking-player-name');
+                    const askedCardRank = document.getElementById('asked-card-rank');
+                    if (askingPlayerName && askedCardRank && askingPlayerName.textContent && askedCardRank.textContent) {
+                        element.textContent = translateText(key, {
+                            askingPlayer: askingPlayerName.textContent,
+                            cardRank: askedCardRank.textContent
+                        });
+                    }
+                } else {
+                    element.textContent = translateText(key);
+                }
+            }
         });
+        
+        // Оновлення placeholder'ів
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            if (key && element.placeholder !== undefined) {
+                element.placeholder = translateText(key);
+            }
+        });
+        
+    } catch (error) {
+        console.warn('Помилка при оновленні тексту:', error);
     }
-	
-	} catch (error) {
-        console.warn('Error updating text:', error);
-        // Ігноруємо помилку, щоб не порушувати роботу додатка
-    }
-	
-	
 }
 
 // Ініціалізація при завантаженні сторінки
