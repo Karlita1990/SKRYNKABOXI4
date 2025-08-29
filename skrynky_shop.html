@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Магазин — Карткова гра</title>
+  <style>
+    :root {
+      /* Fallbacks; будуть перезаписані з Telegram themeParams */
+      --bg: #0f1115;
+      --text: #e7e9ee;
+      --muted: #a3a9b6;
+      --card: #151923;
+      --accent: #2cab37;
+      --danger: #e64646;
+      --shadow: 0 8px 28px rgba(0,0,0,.25);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container { max-width: 1024px; margin: 0 auto; padding: 16px; }
+
+    header {
+      display: flex; align-items: center; gap: 12px; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10; padding: 12px 0; backdrop-filter: blur(8px);
+    }
+    .title { font-size: 20px; font-weight: 700; }
+
+    .tabs {
+      display: grid; grid-auto-flow: column; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+    }
+    .tab { border: 1px solid rgba(255,255,255,.08); padding: 8px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; color: var(--muted); background: rgba(255,255,255,.03); }
+    .tab[aria-selected="true"] { color: var(--text); background: rgba(255,255,255,.08); border-color: transparent; }
+
+    .grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 12px; }
+    @media (min-width: 560px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+      display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 12px;
+    }
+    .icon { font-size: 28px; }
+    .name { font-weight: 700; font-size: 16px; }
+    .desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .price { font-weight: 700; margin-top: 8px; }
+
+    .btn {
+      appearance: none; border: 0; border-radius: 12px; padding: 10px 14px; cursor: pointer;
+      background: rgba(255,255,255,.08); color: var(--text); font-weight: 600;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn-add { background: var(--accent); color: #fff; }
+    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,.12); color: var(--muted); }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .cartbar {
+      position: sticky; bottom: 0; background: linear-gradient(180deg, rgba(15,17,21,0.4), var(--bg));
+      padding: 12px 0 4px; margin-top: 12px;
+    }
+    .cart {
+      background: var(--card); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .cart-info { display: flex; align-items: center; gap: 8px; }
+    .badge { background: rgba(255,255,255,.1); padding: 6px 10px; border-radius: 999px; font-weight: 700; }
+
+    .cart-items { margin-top: 8px; display: grid; gap: 8px; }
+    .cart-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; font-size: 14px; }
+    .qty {
+      display: inline-grid; grid-auto-flow: column; gap: 6px; align-items: center;
+      border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 4px 6px;
+    }
+    .qty button { background: transparent; border: 0; color: var(--text); font-size: 18px; line-height: 1; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">🛒 Магазин</div>
+      <button class="btn btn-ghost" id="btnRestore">Відновити покупки</button>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Категорії">
+      <button class="tab" role="tab" aria-selected="true" data-filter="all">Усе</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="resources">Ресурси</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="subs">Підписки</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="bundles">Набори</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="cosmetics">Косметика</button>
+    </nav>
+
+    <section class="grid" id="itemsGrid"></section>
+
+    <div class="cartbar">
+      <div class="cart">
+        <div class="cart-info">
+          <span class="badge" id="cartCount">0</span>
+          <span id="cartSummary">Кошик порожній</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="price" id="cartTotal">$0.00</div>
+          <button class="btn btn-danger" id="btnClear" title="Очистити кошик">Очистити</button>
+        </div>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+
+    // Тема з Telegram
+    function applyTelegramTheme() {
+      if (!tg || !tg.themeParams) return;
+      const p = tg.themeParams;
+      const map = (k, fb) => p[k] || fb;
+      document.documentElement.style.setProperty('--bg', map('bg_color', '#0f1115'));
+      document.documentElement.style.setProperty('--text', map('text_color', '#e7e9ee'));
+      document.documentElement.style.setProperty('--card', map('secondary_bg_color', '#151923'));
+      document.documentElement.style.setProperty('--muted', map('hint_color', '#a3a9b6'));
+      document.documentElement.style.setProperty('--accent', map('button_color', '#2cab37'));
+      document.documentElement.style.setProperty('--danger', '#e64646');
+    }
+
+    // Розширюємо WebApp, вмикаємо кнопку
+    function initTelegram() {
+      if (!tg) return;
+      tg.ready();
+      tg.expand();
+      tg.MainButton.setParams({ text: 'Оплатити', color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() });
+      tg.MainButton.hide();
+    }
+
+    // Товари
+    const PRODUCTS = [
+      // Ресурси
+      { id: 'energy_50', name: 'Енергія (50)', price: 1.99, emoji: '⚡', desc: 'Для додаткових матчів', cat: 'resources' },
+      { id: 'energy_150', name: 'Енергія (150)', price: 4.99, emoji: '⚡', desc: 'Вигідний пакет', cat: 'resources' },
+      { id: 'crystals_100', name: 'Кристали (100)', price: 3.99, emoji: '💎', desc: 'Валюта для преміум-покупок', cat: 'resources' },
+      { id: 'lives_5', name: 'Життя (5)', price: 2.49, emoji: '❤️', desc: 'Продовжити серію перемог', cat: 'resources' },
+      // Підписки (4–5 варіантів)
+      { id: 'sub_bronze', name: 'Підписка Bronze — 7 дн.', price: 4.99, emoji: '🥉', desc: '+5% кристалів, без реклами', cat: 'subs', subscription: { days: 7, tier: 'Bronze' } },
+      { id: 'sub_silver', name: 'Підписка Silver — 30 дн.', price: 9.99, emoji: '🥈', desc: '+10% кристалів, аватар', cat: 'subs', subscription: { days: 30, tier: 'Silver' } },
+      { id: 'sub_gold', name: 'Підписка Gold — 30 дн.', price: 14.99, emoji: '🥇', desc: '+20% кристалів, рамка профілю', cat: 'subs', subscription: { days: 30, tier: 'Gold' } },
+      { id: 'sub_platinum', name: 'Підписка Platinum — 90 дн.', price: 29.99, emoji: '👑', desc: '+30% кристалів, VIP-емблема', cat: 'subs', subscription: { days: 90, tier: 'Platinum' } },
+      { id: 'sub_season', name: 'Season Pass — сезон', price: 19.99, emoji: '🎫', desc: 'Ексклюзивні завдання та нагороди', cat: 'subs', subscription: { days: 60, tier: 'Season' } },
+      // Набори
+      { id: 'bundle_mega', name: 'Mega Pack', price: 19.99, emoji: '🎁', desc: 'Енергія + Життя + Кристали', cat: 'bundles' },
+      { id: 'bundle_starter', name: 'Starter Pack', price: 7.99, emoji: '📦', desc: 'Стартові ресурси для новачка', cat: 'bundles' },
+      // Косметика
+      { id: 'cos_cardback', name: 'Набір сорочок карт', price: 2.99, emoji: '🃏', desc: 'Косметична зміна вигляду', cat: 'cosmetics' },
+      { id: 'cos_emotes', name: 'Емоції чату (набір)', price: 1.49, emoji: '💬', desc: 'Жестики під час матчу', cat: 'cosmetics' },
+    ];
+
+    // Стан
+    const state = {
+      filter: 'all',
+      cart: new Map(), // id -> { product, qty }
+      currency: 'USD',
+    };
+
+    // Утиліти форматування
+    const fmt = new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'USD' });
+
+    function price(p) { return fmt.format(p); }
+
+    // DOM
+    const grid = document.getElementById('itemsGrid');
+    const cartCount = document.getElementById('cartCount');
+    const cartSummary = document.getElementById('cartSummary');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartItems = document.getElementById('cartItems');
+    const btnClear = document.getElementById('btnClear');
+
+    function haptic(type = 'light') {
+      try { tg?.HapticFeedback?.impactOccurred(type); } catch (_) {}
+    }
+
+    function renderProducts() {
+      const items = PRODUCTS.filter(p => state.filter === 'all' ? true : p.cat === state.filter);
+      grid.innerHTML = '';
+      for (const p of items) {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.setAttribute('data-id', p.id);
+        card.innerHTML = `
+          <div class="icon" aria-hidden="true">${p.emoji}</div>
+          <div>
+            <div class="name">${p.name}</div>
+            <div class="desc">${p.desc}</div>
+            <div class="price">${price(p.price)}</div>
+          </div>
+          <div style="display:grid; gap:8px;">
+            <button class="btn btn-add" data-action="add">Купити</button>
+            <button class="btn btn-ghost" data-action="more">Деталі</button>
+          </div>
+        `;
+        card.querySelector('[data-action="add"]').addEventListener('click', () => addToCart(p));
+        card.querySelector('[data-action="more"]').addEventListener('click', () => showDetails(p));
+        grid.appendChild(card);
+      }
+    }
+
+    function showDetails(p) {
+      const text = `${p.name}\n\n${p.desc}\nЦіна: ${price(p.price)}`;
+      if (tg) tg.showPopup({ title: 'Деталі', message: text, buttons: [{ id: 'ok', type: 'default', text: 'OK' }] });
+      else alert(text);
+    }
+
+    function addToCart(product, qty = 1) {
+      const row = state.cart.get(product.id) || { product, qty: 0 };
+      row.qty += qty;
+      state.cart.set(product.id, row);
+      haptic('medium');
+      updateCartUI();
+    }
+
+    function removeFromCart(id) {
+      state.cart.delete(id);
+      updateCartUI();
+    }
+
+    function changeQty(id, delta) {
+      const row = state.cart.get(id);
+      if (!row) return;
+      row.qty += delta;
+      if (row.qty <= 0) state.cart.delete(id);
+      updateCartUI();
+    }
+
+    function getTotals() {
+      let items = 0, sum = 0;
+      for (const { product, qty } of state.cart.values()) {
+        items += qty;
+        sum += product.price * qty;
+      }
+      return { items, sum };
+    }
+
+    function updateCartUI() {
+      const { items, sum } = getTotals();
+      cartCount.textContent = items;
+      cartSummary.textContent = items ? `В кошику: ${items} од.` : 'Кошик порожній';
+      cartTotal.textContent = price(sum);
+
+      cartItems.innerHTML = '';
+      for (const { product, qty } of state.cart.values()) {
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        row.innerHTML = `
+          <div>${product.emoji} ${product.name}</div>
+          <div class="qty" role="group" aria-label="Кількість">
+            <button aria-label="Зменшити" data-delta="-1">−</button>
+            <span aria-live="polite">${qty}</span>
+            <button aria-label="Збільшити" data-delta="1">+</button>
+          </div>
+          <button class="btn btn-danger" aria-label="Видалити">×</button>
+        `;
+        const [dec, , inc] = row.querySelectorAll('.qty button, .qty span');
+        row.querySelector('.btn-danger').addEventListener('click', () => removeFromCart(product.id));
+        row.querySelectorAll('.qty button')[0].addEventListener('click', () => changeQty(product.id, -1));
+        row.querySelectorAll('.qty button')[1].addEventListener('click', () => changeQty(product.id, 1));
+        cartItems.appendChild(row);
+      }
+
+      if (tg) {
+        if (items > 0) tg.MainButton.show(); else tg.MainButton.hide();
+        tg.MainButton.setText('Оплатити ' + price(sum));
+      }
+    }
+
+    function clearCart() { state.cart.clear(); updateCartUI(); }
+
+    // Checkout — надсилаємо дані у бота
+    function onCheckout() {
+      const payload = [];
+      for (const { product, qty } of state.cart.values()) {
+        payload.push({ id: product.id, qty, price: product.price });
+      }
+      const data = {
+        type: 'checkout',
+        currency: state.currency,
+        items: payload,
+        total: getTotals().sum,
+        ts: Date.now(),
+      };
+      if (tg) tg.sendData(JSON.stringify(data));
+    }
+
+    // Відновлення покупок (демо) — надсилаємо подію у бота
+    function onRestore() {
+      if (tg) tg.sendData(JSON.stringify({ type: 'restore_purchases', ts: Date.now() }));
+    }
+
+    // Обробка вкладок
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', 'false'));
+        btn.setAttribute('aria-selected', 'true');
+        state.filter = btn.dataset.filter;
+        renderProducts();
+      });
+    });
+
+    // Кнопки керування
+    btnClear.addEventListener('click', clearCart);
+    document.getElementById('btnRestore').addEventListener('click', onRestore);
+
+    // Telegram callbacks
+    if (tg) {
+      tg.onEvent('mainButtonClicked', onCheckout);
+      // Безпечне вимкнення слухачів при розвантаженні
+      window.addEventListener('unload', () => tg.offEvent('mainButtonClicked', onCheckout));
+    }
+
+    // ініціалізація
+    applyTelegramTheme();
+    initTelegram();
+    renderProducts();
+    updateCartUI();
+  </script>
+</body>
+</html>
