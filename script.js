@@ -48,9 +48,7 @@
            }
     } else {
         telegramUser = translateText('test_player');
-    }
-    elements.myGameName.textContent = `Ваш нік: ${telegramUser}`;
-    
+    }  
 
 
         // Оновлена функція updateUI
@@ -79,6 +77,7 @@
     myName = elements.playerNameInput.value.trim();
     myRoomId = elements.roomIdInput.value.trim();
     const language = document.getElementById('langSelect').value;
+	elements.myGameName.textContent = `Вітаємо! Ваш нік: ${myName}`;
 
     if (myName && myRoomId) {
         connectWebSocket(language);
