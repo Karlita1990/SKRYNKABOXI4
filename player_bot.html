@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Гра "Скриньки"</title>
+  <title data-i18n="title">Гра "Скриньки"</title>
   <style>
-
-/* --- Адаптовані стилі --- */
+     /* --- Адаптовані стилі --- */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
     body {
@@ -204,33 +203,45 @@
     .close:hover {
         color: #fff;
     }
-	  
+
   </style>
 </head>
 <body>
   <div class="game-container">
-    <h1>Гра "Скриньки"</h1>
+    <div class="lang-switcher">
+        <label for="lang-select">🌍</label>
+        <select id="lang-select">
+            <option value="en">English</option>
+            <option value="uk">Українська</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">Русский</option>
+            <option value="es">Español</option>
+        </select>
+    </div>
+    <h1 data-i18n="gameTitle"></h1>
 
     <div class="game-info">
-      <h3>Поточний гравець: <span id="current-player">Гравець</span></h3>
-      <p>Скриньки гравця: <span id="player-boxes">0</span> (<span id="player-boxes-list"></span>)</p>
-      <p>Скриньки бота: <span id="bot-boxes">0</span> (<span id="bot-boxes-list"></span>)</p>
-      <p>Карт у колоді: <span id="deck-count">36</span></p>
+      <h3 data-i18n="gameInfo"></h3>
+      <p><span data-i18n="currentPlayer"></span> <span id="current-player"></span></p>
+      <p><span data-i18n="playerBoxes"></span> <span id="player-boxes">0</span> (<span id="player-boxes-list"></span>)</p>
+      <p><span data-i18n="botBoxes"></span> <span id="bot-boxes">0</span> (<span id="bot-boxes-list"></span>)</p>
+      <p><span data-i18n="deckCount"></span> <span id="deck-count">36</span></p>
     </div>
 
     <div id="player-hand">
-      <h3>Ваші карти:</h3>
-      <div id="player-cards"></div>
+      <h3 data-i18n="yourCards"></h3>
+      <div id="player-cards" class="card-container"></div>
     </div>
 
     <div class="controls" id="game-controls">
+      <h3 data-i18n="controls"></h3>
       <div id="rank-selection">
-        <p>Оберіть номінал карти, яку хочете запросити:</p>
+        <p data-i18n="rankSelection"></p>
         <div id="rank-buttons"></div>
       </div>
 
       <div id="count-selection" style="display: none;">
-        <p>Оберіть кількість карт:</p>
+        <p data-i18n="countSelection"></p>
         <button class="count-btn" data-count="1">1</button>
         <button class="count-btn" data-count="2">2</button>
         <button class="count-btn" data-count="3">3</button>
@@ -238,62 +249,414 @@
       </div>
 
       <div id="suit-selection" style="display: none;">
-        <p>Оберіть масті:</p>
+        <p data-i18n="suitSelection"></p>
         <button class="suit-btn hearts" data-suit="♥">♥</button>
         <button class="suit-btn diamonds" data-suit="♦">♦</button>
         <button class="suit-btn clubs" data-suit="♣">♣</button>
         <button class="suit-btn spades" data-suit="♠">♠</button>
         <div id="selected-suits"></div>
-        <button id="submit-request" disabled>Підтвердити запит</button>
+        <button id="submit-request" disabled data-i18n="submitRequest"></button>
       </div>
     </div>
 
     <div id="bot-turn-info" style="display: none;">
-      <h3>Хід бота...</h3>
+      <h3 data-i18n="botTurnInfo"></h3>
       <div id="bot-messages"></div>
     </div>
 
     <div class="game-log">
-      <h3>Історія гри:</h3>
+      <h3 data-i18n="gameHistory"></h3>
       <div id="game-history"></div>
     </div>
 
     <div id="game-rules">
-      <h3>Правила гри:</h3>
+      <h3 data-i18n="gameRules"></h3>
       <ol>
-        <li>Мета гри - зібрати якнайбільше "скриньок" (4 карти одного номіналу).</li>
-        <li>Запитуйте у бота карти певного номіналу, кількості та масті.</li>
-        <li>Якщо ви вгадали, продовжуйте ходити, поки не помилитесь.</li>
-        <li>Якщо ні - хід переходить до бота.</li>
-        <li>Гра закінчується, коли зібрано всі 9 скриньок або коли закінчилися карти.</li>
+        <li data-i18n="rule1"></li>
+        <li data-i18n="rule2"></li>
+        <li data-i18n="rule3"></li>
+        <li data-i18n="rule4"></li>
+        <li data-i18n="rule5"></li>
       </ol>
     </div>
 
-    <button id="new-game-btn">Нова гра</button>
-    <button id="send-result-to-bot" style="display:none;">Надіслати результат боту</button>
+    <button id="new-game-btn" data-i18n="newGame"></button>
+    <button id="send-result-to-bot" style="display:none;" data-i18n="sendResult"></button>
   </div>
 
   <div id="game-over-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h2>Гра завершена!</h2>
+      <h2 data-i18n="gameOver"></h2>
       <div id="game-result"></div>
-      <button id="play-again-btn">Грати знову</button>
+      <button id="play-again-btn" data-i18n="playAgain"></button>
     </div>
   </div>
 
-  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <script>
-    // ІНТЕГРАЦІЯ TELEGRAM WEBAPP
+    const translations = {
+      en: {
+        title: "The Boxes Game",
+        player: "Player",
+        bot: "Bot",
+        gameTitle: "The Boxes Game",
+        gameInfo: "Game Information",
+        currentPlayer: "Current Player:",
+        playerBoxes: "Player's Boxes:",
+        botBoxes: "Bot's Boxes:",
+        deckCount: "Cards in Deck:",
+        yourCards: "Your Cards:",
+        controls: "Controls",
+        rankSelection: "Choose the rank of the card you want to request:",
+        countSelection: "Choose the number of cards:",
+        suitSelection: "Choose the suits:",
+        selectedSuits: "Selected suits:",
+        submitRequest: "Submit Request",
+        botTurnInfo: "Bot's Turn...",
+        gameHistory: "Game History:",
+        gameRules: "Game Rules:",
+        rule1: "The goal of the game is to collect as many 'boxes' (4 cards of the same rank) as possible.",
+        rule2: "Ask the bot for cards of a certain rank, count, and suit.",
+        rule3: "If you guess correctly, continue your turn until you make a mistake.",
+        rule4: "If not, the turn passes to the bot.",
+        rule5: "The game ends when all 9 boxes are collected or when there are no more cards.",
+        newGame: "New Game",
+        sendResult: "Send Result to Bot",
+        gameOver: "Game Over!",
+        playAgain: "Play Again",
+        gameStarted: "Game started!",
+        initialCardsDealt: "Initial cards dealt to players",
+        playerCollectedBox: "You collected a box of {rank}!",
+        botCollectedBox: "The bot collected a box of {rank}!",
+        playerAsk: "Player asked for cards of rank {rank}",
+        playerAskCount: "Player asked for {count} cards of rank {rank}",
+        playerChoseSuits: "Player chose suits: {suits}",
+        botAsk: "Bot asks: \"Do you have {rank}?\"",
+        botAskCount: "Bot asks: \"Do you have {count} {rank}?\"",
+        botAskSuits: "Bot asks: \"Do you have {count} {rank} of suits {suits}?\"",
+        botTurnThinking: "🤖 The bot is thinking about its move...",
+        botDrawsFromDeck: "🤖 Bot received a card from the deck.",
+        playerDrewFromDeck: "You took a card from the deck: {card}",
+        botNoCards: "You don't have those cards.",
+        botDrawsFromDeckMessage: "📩 Bot received a card from the deck.",
+        playerMistakeCount: "You made a mistake! The bot has {count} of rank {rank}.",
+        playerMistakeSuits: "You made a mistake!",
+        noMoreCardsInDeck: "There are no more cards in the deck.",
+        playerGuessed: "🎉 You guessed correctly! The bot gave you: {cards}",
+        yourNewCards: "📋 Your new cards: {cards}",
+        playerNoCardsDraw: "🃏 You have no cards left. You took a card: {card}",
+        playerNoCardsNoDeck: "🃏 You have no cards and the deck is empty.",
+        botGuessed: "🎯 The bot guessed correctly! You give up: {cards}",
+        botCards: "Bot's cards:",
+        botNoCardsInHand: "🤖 The bot had no cards.",
+        allBoxesCollected: "🤖 All boxes have been collected!",
+        errorWebApp: "WebApp API is not available - the page is not opened via Telegram.",
+        resultSent: "Result sent to bot ✅",
+        errorSending: "Error sending result to bot.",
+        results: "Results:",
+        winner: "Winner:",
+        gameOverWinner: "Game Over! Winner: {winner} with {boxes} boxes",
+        playerTookCards: "Player took cards from {fromPlayer}: {cards}",
+        botTookCards: "Bot took cards from {fromPlayer}: {cards}",
+        botTurn: "Bot's turn...",
+        playerTookFromDeck: "Player took a card from the deck: {card}",
+        youGuessed: "You guessed correctly!",
+        youMadeAMistake: "You made a mistake!",
+        botPassedTurn: "The turn passes to the bot.",
+        deckEmpty: "The deck is empty."
+      },
+      uk: {
+        title: "Гра 'Скриньки'",
+        player: "Гравець",
+        bot: "Бот",
+        gameTitle: "Гра 'Скриньки'",
+        gameInfo: "Інформація про гру",
+        currentPlayer: "Поточний гравець:",
+        playerBoxes: "Скриньки гравця:",
+        botBoxes: "Скриньки бота:",
+        deckCount: "Карт у колоді:",
+        yourCards: "Ваші карти:",
+        controls: "Управління",
+        rankSelection: "Оберіть номінал карти, яку хочете запросити:",
+        countSelection: "Оберіть кількість карт:",
+        suitSelection: "Оберіть масті:",
+        selectedSuits: "Вибрано мастей:",
+        submitRequest: "Підтвердити запит",
+        botTurnInfo: "Хід бота...",
+        gameHistory: "Історія гри:",
+        gameRules: "Правила гри:",
+        rule1: "Мета гри - зібрати якнайбільше 'скриньок' (4 карти одного номіналу).",
+        rule2: "Запитуйте у бота карти певного номіналу, кількості та масті.",
+        rule3: "Якщо ви вгадали, продовжуйте ходити, поки не помилитесь.",
+        rule4: "Якщо ні - хід переходить до бота.",
+        rule5: "Гра закінчується, коли зібрано всі 9 скриньок або коли закінчилися карти.",
+        newGame: "Нова гра",
+        sendResult: "Надіслати результат боту",
+        gameOver: "Гра завершена!",
+        playAgain: "Грати знову",
+        gameStarted: "Гра розпочалася!",
+        initialCardsDealt: "Роздано початкові карти гравцям",
+        playerCollectedBox: "Ви зібрали скриньку {rank}!",
+        botCollectedBox: "Бот зібрав скриньку {rank}!",
+        playerAsk: "Гравець запитав карти {rank}",
+        playerAskCount: "Гравець запитав {count} карти {rank}",
+        playerChoseSuits: "Гравець вибрав масті: {suits}",
+        botAsk: "Бот запитує: \"У вас є {rank}?\"",
+        botAskCount: "Бот запитує: \"У вас є {count} {rank}?\"",
+        botAskSuits: "Бот запитує: \"У вас є {count} {rank} мастей {suits}?\"",
+        botTurnThinking: "🤖 Бот обдумує свій хід...",
+        botDrawsFromDeck: "🤖 Бот отримав карту з колоди.",
+        playerDrewFromDeck: "Ви взяли карту з колоди: {card}",
+        botNoCards: "У вас немає таких карт.",
+        botDrawsFromDeckMessage: "📩 Бот отримав карту з колоди.",
+        playerMistakeCount: "Ви помилились! У бота {count} {rank}.",
+        playerMistakeSuits: "Ви помилились!",
+        noMoreCardsInDeck: "В колоді більше немає карт.",
+        playerGuessed: "🎉 Ви вгадали! Бот віддав вам: {cards}",
+        yourNewCards: "📋 Ваші нові карти: {cards}",
+        playerNoCardsDraw: "🃏 У вас не залишилося карт. Взяли карту: {card}",
+        playerNoCardsNoDeck: "🃏 У вас немає карт і в колоді більше немає карт.",
+        botGuessed: "🎯 Бот вгадав! Ви віддаєте: {cards}",
+        botCards: "Скриньки бота:",
+        botNoCardsInHand: "🤖 У бота не було карт.",
+        allBoxesCollected: "🤖 Усі скриньки вже зібрані!",
+        errorWebApp: "WebApp API недоступний — сторінка не відкрита через Telegram.",
+        resultSent: "Результат відправлено боту ✅",
+        errorSending: "Помилка при відправленні результату боту.",
+        results: "Результати:",
+        winner: "Переможець:",
+        gameOverWinner: "Гра завершена! Переможець: {winner} з {boxes} скриньками",
+        playerTookCards: "Гравець забрав у {fromPlayer} карти: {cards}",
+        botTookCards: "Бот забрав у {fromPlayer} карти: {cards}",
+        botTurn: "Хід бота...",
+        playerTookFromDeck: "Гравець взяв карту з колоди: {card}",
+        youGuessed: "Ви вгадали!",
+        youMadeAMistake: "Ви помилились!",
+        botPassedTurn: "Хід переходить до бота.",
+        deckEmpty: "Колода порожня."
+      },
+      de: {
+        title: "Das Kisten-Spiel",
+        player: "Spieler",
+        bot: "Bot",
+        gameTitle: "Das Kisten-Spiel",
+        gameInfo: "Spielinformationen",
+        currentPlayer: "Aktueller Spieler:",
+        playerBoxes: "Kisten des Spielers:",
+        botBoxes: "Kisten des Bots:",
+        deckCount: "Karten im Stapel:",
+        yourCards: "Ihre Karten:",
+        controls: "Steuerung",
+        rankSelection: "Wählen Sie den Wert der Karte, die Sie anfragen möchten:",
+        countSelection: "Wählen Sie die Anzahl der Karten:",
+        suitSelection: "Wählen Sie die Farben:",
+        selectedSuits: "Ausgewählte Farben:",
+        submitRequest: "Anfrage bestätigen",
+        botTurnInfo: "Zug des Bots...",
+        gameHistory: "Spielverlauf:",
+        gameRules: "Spielregeln:",
+        rule1: "Das Ziel des Spiels ist es, so viele 'Kisten' (4 Karten desselben Wertes) wie möglich zu sammeln.",
+        rule2: "Fragen Sie den Bot nach Karten eines bestimmten Wertes, einer Anzahl und einer Farbe.",
+        rule3: "Wenn Sie richtig geraten haben, setzen Sie Ihren Zug fort, bis Sie einen Fehler machen.",
+        rule4: "Wenn nicht, geht der Zug an den Bot über.",
+        rule5: "Das Spiel endet, wenn alle 9 Kisten gesammelt sind oder wenn keine Karten mehr vorhanden sind.",
+        newGame: "Neues Spiel",
+        sendResult: "Ergebnis an den Bot senden",
+        gameOver: "Spiel beendet!",
+        playAgain: "Nochmal spielen",
+        gameStarted: "Spiel gestartet!",
+        initialCardsDealt: "Anfangskarten an die Spieler ausgeteilt",
+        playerCollectedBox: "Sie haben eine Kiste {rank} gesammelt!",
+        botCollectedBox: "Der Bot hat eine Kiste {rank} gesammelt!",
+        playerAsk: "Spieler fragte nach Karten {rank}",
+        playerAskCount: "Spieler fragte nach {count} Karten des Wertes {rank}",
+        playerChoseSuits: "Spieler wählte Farben: {suits}",
+        botAsk: "Bot fragt: \"Haben Sie {rank}?\"",
+        botAskCount: "Bot fragt: \"Haben Sie {count} {rank}s?\"",
+        botAskSuits: "Bot fragt: \"Haben Sie {count} {rank}s der Farben {suits}?\"",
+        botTurnThinking: "🤖 Der Bot denkt über seinen Zug nach...",
+        botDrawsFromDeck: "🤖 Bot hat eine Karte vom Stapel genommen.",
+        playerDrewFromDeck: "Sie haben eine Karte vom Stapel genommen: {card}",
+        botNoCards: "Sie haben diese Karten nicht.",
+        botDrawsFromDeckMessage: "📩 Bot hat eine Karte vom Stapel genommen.",
+        playerMistakeCount: "Sie haben sich geirrt! Der Bot hat {count} von {rank}.",
+        playerMistakeSuits: "Sie haben sich geirrt!",
+        noMoreCardsInDeck: "Es sind keine Karten mehr im Stapel.",
+        playerGuessed: "🎉 Sie haben richtig geraten! Der Bot hat Ihnen gegeben: {cards}",
+        yourNewCards: "📋 Ihre neuen Karten: {cards}",
+        playerNoCardsDraw: "🃏 Sie haben keine Karten mehr. Sie haben eine Karte genommen: {card}",
+        playerNoCardsNoDeck: "🃏 Sie haben keine Karten mehr und der Stapel ist leer.",
+        botGuessed: "🎯 Der Bot hat richtig geraten! Sie geben ab: {cards}",
+        botCards: "Kisten des Bots:",
+        botNoCardsInHand: "🤖 Der Bot hatte keine Karten.",
+        allBoxesCollected: "🤖 Alle Kisten wurden gesammelt!",
+        errorWebApp: "WebApp API ist nicht verfügbar – die Seite wurde nicht über Telegram geöffnet.",
+        resultSent: "Ergebnis an den Bot gesendet ✅",
+        errorSending: "Fehler beim Senden des Ergebnisses an den Bot.",
+        results: "Ergebnisse:",
+        winner: "Gewinner:",
+        gameOverWinner: "Spiel beendet! Gewinner: {winner} mit {boxes} Kisten",
+        playerTookCards: "Spieler nahm Karten von {fromPlayer}: {cards}",
+        botTookCards: "Bot nahm Karten von {fromPlayer}: {cards}",
+        botTurn: "Zug des Bots...",
+        playerTookFromDeck: "Spieler hat eine Karte vom Stapel genommen: {card}",
+        youGuessed: "Sie haben richtig geraten!",
+        youMadeAMistake: "Sie haben sich geirrt!",
+        botPassedTurn: "Der Zug geht an den Bot über.",
+        deckEmpty: "Der Stapel ist leer."
+      },
+      ru: {
+        title: "Игра 'Сундучки'",
+        player: "Игрок",
+        bot: "Бот",
+        gameTitle: "Игра 'Сундучки'",
+        gameInfo: "Информация об игре",
+        currentPlayer: "Текущий игрок:",
+        playerBoxes: "Сундучки игрока:",
+        botBoxes: "Сундучки бота:",
+        deckCount: "Карт в колоде:",
+        yourCards: "Ваши карты:",
+        controls: "Управление",
+        rankSelection: "Выберите номинал карты, которую хотите запросить:",
+        countSelection: "Выберите количество карт:",
+        suitSelection: "Выберите масти:",
+        selectedSuits: "Выбрано мастей:",
+        submitRequest: "Подтвердить запрос",
+        botTurnInfo: "Ход бота...",
+        gameHistory: "История игры:",
+        gameRules: "Правила игры:",
+        rule1: "Цель игры - собрать как можно больше 'сундучков' (4 карты одного номинала).",
+        rule2: "Запрашивайте у бота карты определенного номинала, количества и масти.",
+        rule3: "Если вы угадали, продолжайте ходить, пока не ошибетесь.",
+        rule4: "Если нет - ход переходит к боту.",
+        rule5: "Игра заканчивается, когда собраны все 9 сундучков или когда закончились карты.",
+        newGame: "Новая игра",
+        sendResult: "Отправить результат боту",
+        gameOver: "Игра завершена!",
+        playAgain: "Играть снова",
+        gameStarted: "Игра началась!",
+        initialCardsDealt: "Разданы начальные карты игрокам",
+        playerCollectedBox: "Вы собрали сундучок {rank}!",
+        botCollectedBox: "Бот собрал сундучок {rank}!",
+        playerAsk: "Игрок запросил карты {rank}",
+        playerAskCount: "Игрок запросил {count} карты {rank}",
+        playerChoseSuits: "Игрок выбрал масти: {suits}",
+        botAsk: "Бот спрашивает: \"У вас есть {rank}?\"",
+        botAskCount: "Бот спрашивает: \"У вас есть {count} {rank}?\"",
+        botAskSuits: "Бот спрашивает: \"У вас есть {count} {rank} мастей {suits}?\"",
+        botTurnThinking: "🤖 Бот обдумывает свой ход...",
+        botDrawsFromDeck: "🤖 Бот получил карту из колоды.",
+        playerDrewFromDeck: "Вы взяли карту из колоды: {card}",
+        botNoCards: "У вас нет таких карт.",
+        botDrawsFromDeckMessage: "📩 Бот получил карту из колоды.",
+        playerMistakeCount: "Вы ошиблись! У бота {count} {rank}.",
+        playerMistakeSuits: "Вы ошиблись!",
+        noMoreCardsInDeck: "В колоде больше нет карт.",
+        playerGuessed: "🎉 Вы угадали! Бот отдал вам: {cards}",
+        yourNewCards: "📋 Ваши новые карты: {cards}",
+        playerNoCardsDraw: "🃏 У вас не осталось карт. Взяли карту: {card}",
+        playerNoCardsNoDeck: "🃏 У вас нет карт и в колоде больше нет карт.",
+        botGuessed: "🎯 Бот угадал! Вы отдаете: {cards}",
+        botCards: "Сундучки бота:",
+        botNoCardsInHand: "🤖 У бота не было карт.",
+        allBoxesCollected: "🤖 Все сундучки уже собраны!",
+        errorWebApp: "WebApp API недоступен — страница не открыта через Telegram.",
+        resultSent: "Результат отправлен боту ✅",
+        errorSending: "Ошибка при отправке результата боту.",
+        results: "Результаты:",
+        winner: "Победитель:",
+        gameOverWinner: "Игра завершена! Победитель: {winner} с {boxes} сундучками",
+        playerTookCards: "Игрок забрал у {fromPlayer} карты: {cards}",
+        botTookCards: "Бот забрал у {fromPlayer} карты: {cards}",
+        botTurn: "Ход бота...",
+        playerTookFromDeck: "Игрок взял карту из колоды: {card}",
+        youGuessed: "Вы угадали!",
+        youMadeAMistake: "Вы ошиблись!",
+        botPassedTurn: "Ход переходит к боту.",
+        deckEmpty: "Колода пуста."
+      },
+      es: {
+        title: "El Juego de las Cajas",
+        player: "Jugador",
+        bot: "Bot",
+        gameTitle: "El Juego de las Cajas",
+        gameInfo: "Información del Juego",
+        currentPlayer: "Jugador actual:",
+        playerBoxes: "Cajas del Jugador:",
+        botBoxes: "Cajas del Bot:",
+        deckCount: "Cartas en el mazo:",
+        yourCards: "Tus cartas:",
+        controls: "Controles",
+        rankSelection: "Elige el valor de la carta que quieres pedir:",
+        countSelection: "Elige la cantidad de cartas:",
+        suitSelection: "Elige los palos:",
+        selectedSuits: "Palos seleccionados:",
+        submitRequest: "Confirmar solicitud",
+        botTurnInfo: "Turno del bot...",
+        gameHistory: "Historial del juego:",
+        gameRules: "Reglas del juego:",
+        rule1: "El objetivo del juego es recoger tantas 'cajas' (4 cartas del mismo valor) como sea posible.",
+        rule2: "Pide al bot cartas de un cierto valor, cantidad y palo.",
+        rule3: "Si adivinas correctamente, continúa tu turno hasta que te equivoques.",
+        rule4: "Si no, el turno pasa al bot.",
+        rule5: "El juego termina cuando se recogen las 9 cajas o cuando no hay más cartas.",
+        newGame: "Nueva partida",
+        sendResult: "Enviar resultado al bot",
+        gameOver: "¡Juego terminado!",
+        playAgain: "Jugar de nuevo",
+        gameStarted: "¡Juego iniciado!",
+        initialCardsDealt: "Cartas iniciales repartidas a los jugadores",
+        playerCollectedBox: "¡Has recogido una caja {rank}!",
+        botCollectedBox: "¡El bot ha recogido una caja {rank}!",
+        playerAsk: "El jugador pidió cartas {rank}",
+        playerAskCount: "El jugador pidió {count} cartas de valor {rank}",
+        playerChoseSuits: "El jugador eligió palos: {suits}",
+        botAsk: "El bot pregunta: \"¿Tienes {rank}?\"",
+        botAskCount: "El bot pregunta: \"¿Tienes {count} {rank}?\"",
+        botAskSuits: "El bot pregunta: \"¿Tienes {count} {rank} de palos {suits}?\"",
+        botTurnThinking: "🤖 El bot está pensando en su jugada...",
+        botDrawsFromDeck: "🤖 El bot recibió una carta del mazo.",
+        playerDrewFromDeck: "Has tomado una carta del mazo: {card}",
+        botNoCards: "No tienes esas cartas.",
+        botDrawsFromDeckMessage: "📩 El bot recibió una carta del mazo.",
+        playerMistakeCount: "¡Te equivocaste! El bot tiene {count} de {rank}.",
+        playerMistakeSuits: "¡Te equivocaste!",
+        noMoreCardsInDeck: "No hay más cartas en el mazo.",
+        playerGuessed: "🎉 ¡Adivinaste correctamente! El bot te dio: {cards}",
+        yourNewCards: "📋 Tus nuevas cartas: {cards}",
+        playerNoCardsDraw: "🃏 No te quedan cartas. Has tomado una carta: {card}",
+        playerNoCardsNoDeck: "🃏 No te quedan cartas y el mazo está vacío.",
+        botGuessed: "🎯 ¡El bot adivinó correctamente! Entregas: {cards}",
+        botCards: "Cajas del bot:",
+        botNoCardsInHand: "🤖 El bot no tenía cartas.",
+        allBoxesCollected: "🤖 ¡Todas las cajas han sido recogidas!",
+        errorWebApp: "La API de WebApp no está disponible, la página no se abrió a través de Telegram.",
+        resultSent: "Resultado enviado al bot ✅",
+        errorSending: "Error al enviar el resultado al bot.",
+        results: "Resultados:",
+        winner: "Ganador:",
+        gameOverWinner: "¡Juego terminado! Ganador: {winner} con {boxes} cajas",
+        playerTookCards: "El jugador tomó cartas de {fromPlayer}: {cards}",
+        botTookCards: "Bot tomó cartas de {fromPlayer}: {cards}",
+        botTurn: "Turno del bot...",
+        playerTookFromDeck: "El jugador tomó una carta del mazo: {card}",
+        youGuessed: "Adivinaste correctamente!",
+        youMadeAMistake: "Te equivocaste!",
+        botPassedTurn: "El turno pasa al bot.",
+        deckEmpty: "El mazo está vacío."
+      },
+    };
+
+    // telegram webapp SDK
     const tg = window.Telegram?.WebApp;
     if (tg) {
-      // Розгорнути WebApp під екран (опційно)
-      try { tg.expand(); } catch(e) {}
+      try {
+        tg.expand();
+      } catch(e) {}
     }
 
-    // --- Весь ваш класовий код (без змін логіки), але з додатковими викликами WebApp ---
     class SkrynkyGame {
       constructor(players = ["Гравець", "Бот"], deckSize = 36) {
         this.players = players;
@@ -304,12 +667,11 @@
         this.usedBoxes = new Set();
         this.collectedBoxes = { "Гравець": [], "Бот": [] };
         this.gameHistory = [];
-        this.addToHistory("system", "Гра розпочалася!");
+        this.addToHistory("system", "gameStarted");
         this.dealCards();
       }
 
       _generateDeck(size) {
-        // стандартні ранги у 36-картковій колоді
         const allRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
         const ranks = allRanks.slice(0, size / 4);
         const suits = ['♥', '♦', '♣', '♠'];
@@ -327,7 +689,7 @@
             }
           }
         }
-        this.addToHistory("system", "Роздано початкові карти гравцям");
+        this.addToHistory("system", "initialCardsDealt");
       }
 
       getPlayerCardsByRank(player, rank) {
@@ -350,7 +712,7 @@
           this.usedBoxes.add(rank);
           this.collectedBoxes[player].push(rank);
           this.hands[player] = this.hands[player].filter(card => !card.startsWith(rank));
-          this.addToHistory("system", `⚡️ ${player} зібрав скриньку ${rank}!`);
+          this.addToHistory("system", `${player === "Гравець" ? "playerCollectedBox" : "botCollectedBox"}`, { rank });
           return true;
         }
         return false;
@@ -366,7 +728,7 @@
             this.usedBoxes.add(rank);
             this.collectedBoxes[player].push(rank);
             this.hands[player] = this.hands[player].filter(card => !card.startsWith(rank));
-            this.addToHistory("system", `⚡️ ${player} зібрав скриньку ${rank}!`);
+            this.addToHistory("system", `${player === "Гравець" ? "playerCollectedBox" : "botCollectedBox"}`, { rank });
             changed = true;
           }
         }
@@ -383,11 +745,9 @@
         const collected = this._checkBoxesAfterDeal(player, card.slice(0, -1));
 
         const role = player === "Гравець" ? "player" : "bot";
-        const message = role === "player"
-          ? `${player} взяв карту з колоди: ${card}`
-          : `${player} взяв карту з колоди.`;
+        const messageKey = role === "player" ? "playerTookFromDeck" : "botDrawsFromDeck";
 
-        this.addToHistory(role, message);
+        this.addToHistory(role, messageKey, { card });
 
         return { success: true, collected, card };
       }
@@ -395,6 +755,13 @@
       takeCards(fromPlayer, rank) {
         const cards = this.hands[fromPlayer].filter(card => card.startsWith(rank));
         this.hands[fromPlayer] = this.hands[fromPlayer].filter(card => !card.startsWith(rank));
+
+        this.addToHistory(fromPlayer === "Гравець" ? "bot" : "player",
+          fromPlayer === "Гравець" ? "botTookCards" : "playerTookCards", {
+            fromPlayer: fromPlayer === "Гравець" ? translations[ui.lang].player : translations[ui.lang].bot,
+            cards: cards.join(', '),
+          });
+
         return cards;
       }
 
@@ -425,19 +792,9 @@
         }
       }
 
-      takeCards(fromPlayer, rank) {
-        const cards = this.hands[fromPlayer].filter(card => card.startsWith(rank));
-        this.hands[fromPlayer] = this.hands[fromPlayer].filter(card => !card.startsWith(rank));
-
-        this.addToHistory(fromPlayer === "Гравець" ? "bot" : "player",
-          `${this.players[this.currentPlayerIdx]} забрав у ${fromPlayer} карти: ${cards.join(', ')}`);
-
-        return cards;
-      }
-
-      addToHistory(type, message) {
+      addToHistory(type, messageKey, replacements = {}) {
         const timestamp = new Date().toLocaleTimeString();
-        this.gameHistory.push({ type, message, timestamp });
+        this.gameHistory.push({ type, messageKey, replacements, timestamp });
       }
 
       getCurrentPlayer() {
@@ -450,25 +807,50 @@
         this.game = null;
         this.selectedSuits = [];
         this.requiredCount = 0;
+        this.lang = this._getLang();
         this.initElements();
         this.bindEvents();
         this.startNewGame();
         this.initTelegramUser();
+        this._localize();
+      }
+      
+      _getLang() {
+        const userLang = navigator.language.split('-')[0];
+        const supportedLangs = Object.keys(translations);
+        return supportedLangs.includes(userLang) ? userLang : 'en';
+      }
+      
+      _localize() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (translations[this.lang] && translations[this.lang][key]) {
+            el.textContent = translations[this.lang][key];
+          }
+        });
+      }
+
+      localize(key, replacements = {}) {
+        let message = translations[this.lang]?.[key] || key;
+        for (const placeholder in replacements) {
+          const regex = new RegExp(`{${placeholder}}`, 'g');
+          message = message.replace(regex, replacements[placeholder]);
+        }
+        return message;
       }
 
       initTelegramUser() {
-        // Якщо WebApp — заповнимо ім'я гравця по даним з Telegram
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
           const u = tg.initDataUnsafe.user;
           const name = u.username ? `@${u.username}` : (u.first_name || 'Гравець');
           document.getElementById('current-player').textContent = name;
-          // Збережемо як ім'я гравця у логіці (не змінюємо ключі "Гравець"/"Бот")
           this.telegramUser = name;
         }
       }
 
       initElements() {
         this.elements = {
+          langSelect: document.getElementById('lang-select'),
           currentPlayer: document.getElementById('current-player'),
           playerBoxes: document.getElementById('player-boxes'),
           playerBoxesList: document.getElementById('player-boxes-list'),
@@ -496,6 +878,7 @@
       }
 
       bindEvents() {
+        this.elements.langSelect.addEventListener('change', (e) => this.setLanguage(e.target.value));
         this.elements.newGameBtn.addEventListener('click', () => this.startNewGame());
         this.elements.playAgainBtn.addEventListener('click', () => this.startNewGame());
         this.elements.closeModal.addEventListener('click', () => this.closeModal());
@@ -521,6 +904,18 @@
 
         this.elements.submitRequest.addEventListener('click', () => this.submitRequest());
       }
+      
+      setLanguage(lang) {
+        this.lang = lang;
+        this._localize();
+        this.updateUI();
+        this.setupRankButtons();
+        // Update any dynamic text based on the new language
+        if (this.game) {
+            this.elements.botMessages.innerHTML = `<p>${this.localize('botTurnThinking')}</p>`;
+            this.updateGameHistory();
+        }
+      }
 
       startNewGame() {
         this.game = new SkrynkyGame();
@@ -531,7 +926,6 @@
         this.setupRankButtons();
         this.updateGameHistory();
         if (tg) {
-          // ховаємо кнопку надсилання результату поки гра не завершена
           this.elements.sendResultBtn.style.display = 'none';
         }
       }
@@ -549,7 +943,7 @@
 
       setupRankButtons() {
         this.elements.rankButtons.innerHTML = '';
-        const availableRanks = ['6','7','8','9','10','J','Q','K','A'].filter(rank => !this.game.usedBoxes.has(rank));
+        const availableRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'].filter(rank => !this.game.usedBoxes.has(rank));
         if (availableRanks.length === 0) return;
         availableRanks.forEach(rank => {
           const btn = document.createElement('button');
@@ -561,7 +955,7 @@
 
       handleRankSelection(rank) {
         const botCards = this.game.hands["Бот"].filter(card => card.startsWith(rank));
-        this.game.addToHistory("player", `Гравець запитав карти ${rank}`);
+        this.game.addToHistory("player", "playerAsk", { rank });
         if (botCards.length === 0) {
           this.handleNoCardsFromBot(rank);
           return;
@@ -574,16 +968,16 @@
       handleCountSelection(count) {
         const rank = this.game.playerState.rank;
         const botCards = this.game.getPlayerCardsByRank("Бот", rank);
-        this.game.addToHistory("player", `Гравець запитав ${count} карти ${rank}`);
+        this.game.addToHistory("player", "playerAskCount", { count, rank });
 
         if (botCards.length !== parseInt(count)) {
-          this.game.addToHistory("player", `Гравець помилився з кількістю ${count} для ${rank}`);
+          this.game.addToHistory("player", "playerMistakeCount", { count: botCards.length, rank });
           const result = this.game.drawCard("Гравець");
-          let message = `❌ Ви помилились! У бота ${botCards.length} ${rank}. `;
+          let message = `${this.localize("youMadeAMistake")}! ${this.localize("playerMistakeCount", { count: botCards.length, rank })}. `;
           if (result.success) {
-            message += `Взяли карту з колоди: ${result.card}`;
-            if (result.collected) message += `<br>⚡️ Ви зібрали скриньку ${result.card.slice(0,-1)}!`;
-          } else message += `В колоді більше немає карт.`;
+            message += `${this.localize("playerDrewFromDeck", { card: result.card })}`;
+            if (result.collected) message += `<br>⚡️ ${this.localize("playerCollectedBox", { rank: result.card.slice(0, -1)})}`;
+          } else message += `${this.localize("noMoreCardsInDeck")}`;
           this.showMessage(message);
           this.game.nextTurn();
           this.resetRequestState();
@@ -610,7 +1004,7 @@
       }
 
       updateSelectedSuitsDisplay() {
-        this.elements.selectedSuits.innerHTML = 'Вибрано мастей: ' +
+        this.elements.selectedSuits.innerHTML = this.localize('selectedSuits') + ' ' +
           this.selectedSuits.map(suit => {
             const colorClass = suit === '♥' || suit === '♦' ? 'hearts' : 'clubs';
             return `<span class="${colorClass}">${suit}</span>`;
@@ -621,7 +1015,7 @@
         const rank = this.game.playerState.rank;
         const botCards = this.game.getPlayerCardsByRank("Бот", rank);
         const botSuits = botCards.map(card => card.slice(-1));
-        this.game.addToHistory("player", `Гравець вибрав масті: ${this.selectedSuits.join(', ')}`);
+        this.game.addToHistory("player", "playerChoseSuits", { suits: this.selectedSuits.join(', ') });
         if (this.arraysEqual(this.selectedSuits.sort(), botSuits.sort())) {
           this.handleSuccessfulGuess(rank, botCards);
         } else {
@@ -632,7 +1026,12 @@
         this.selectedSuits = [];
       }
 
-      arraysEqual(a,b){ if(a.length!==b.length) return false; for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return false; return true; }
+      arraysEqual(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++)
+          if (a[i] !== b[i]) return false;
+        return true;
+      }
 
       handleSuccessfulGuess(rank, takenCards) {
         const player = "Гравець";
@@ -641,12 +1040,12 @@
         const collectedBefore = this.game.boxes[player];
         this.game.checkBoxes(player);
 
-        let message = `🎉 Ви вгадали! Бот віддав вам: ${cardsTaken.join(', ')}<br>`;
-        message += `📋 Ваші нові карти: ${this.game.hands[player].sort().join(', ')}`;
+        let message = `${this.localize("youGuessed")}! ${this.localize("playerGuessed", { cards: cardsTaken.join(', ') })}<br>`;
+        message += `${this.localize("yourNewCards", { cards: this.game.hands[player].sort().join(', ') })}`;
 
         if (this.game.boxes[player] > collectedBefore) {
           const newBox = this.game.collectedBoxes[player][this.game.collectedBoxes[player].length - 1];
-          message += `<br>⚡️ Ви зібрали скриньку ${newBox}! Загалом: ${this.game.boxes[player]}`;
+          message += `<br>⚡️ ${this.localize("playerCollectedBox", { rank: newBox })}!`;
         }
 
         this.showMessage(message);
@@ -662,37 +1061,36 @@
       handleFailedGuess(rank) {
         const player = "Гравець";
         const result = this.game.drawCard(player);
-        let message = `❌ Ви помилились! `;
+        let message = `${this.localize("youMadeAMistake")}! `;
         if (result.success) {
-          message += `Взяли карту з колоди: ${result.card}<br>`;
-          if (result.collected) message += `<br>⚡️ Ви зібрали скриньку ${result.card.slice(0,-1)}!`;
-          message += `📋 Ваші карти: ${this.game.hands[player].sort().join(', ')}`;
+          message += `${this.localize("playerDrewFromDeck", { card: result.card })}<br>`;
+          if (result.collected) message += `<br>⚡️ ${this.localize("playerCollectedBox", { rank: result.card.slice(0, -1)})}`;
+          message += `📋 ${this.localize("yourCards")}: ${this.game.hands[player].sort().join(', ')}`;
         } else {
-          message += `В колоді більше немає карт.`;
+          message += `${this.localize("noMoreCardsInDeck")}.`;
         }
         this.showMessage(message);
         this.game.nextTurn();
         this.resetRequestState();
         this.updateUI();
-        setTimeout(()=>this.processTurn(),1000);
+        setTimeout(() => this.processTurn(), 1000);
       }
 
-      handleNoCardsFromBot(rank, count = null) {
+      handleNoCardsFromBot(rank) {
         const player = "Гравець";
         const result = this.game.drawCard(player);
-        let message = `❌ У бота ${count ? `не ${count}` : 'немає'} ${rank}. `;
+        let message = `❌ ${this.localize("botNoCards")}. `;
         if (result.success) {
-          message += `Взяли карту з колоди: ${result.card}<br>`;
-          if (result.collected) message += `<br>⚡️ Ви зібрали скриньку ${result.card.slice(0,-1)}!`;
-          message += `📋 Ваші карти: ${this.game.hands[player].sort().join(', ')}`;
+          message += `${this.localize("playerDrewFromDeck", { card: result.card })}<br>`;
+          if (result.collected) message += `<br>⚡️ ${this.localize("playerCollectedBox", { rank: result.card.slice(0, -1)})}`;
         } else {
-          message += `В колоді більше немає карт.`;
+          message += `${this.localize("noMoreCardsInDeck")}.`;
         }
         this.showMessage(message);
         this.game.nextTurn();
         this.resetRequestState();
         this.updateUI();
-        setTimeout(()=>this.processTurn(),1000);
+        setTimeout(() => this.processTurn(), 1000);
       }
 
       handlePlayerNoCards() {
@@ -700,24 +1098,29 @@
         if (this.game.deck.length > 0) {
           const result = this.game.drawCard(player);
           if (result.success) {
-            let message = `🃏 У вас не залишилося карт. Взяли карту: ${result.card}`;
-            if (result.collected) message += `<br>⚡️ Ви зібрали скриньку ${result.card.slice(0,-1)}!`;
+            let message = `🃏 ${this.localize("playerNoCardsDraw", { card: result.card })}`;
+            if (result.collected) message += `<br>⚡️ ${this.localize("playerCollectedBox", { rank: result.card.slice(0, -1)})}`;
             this.showMessage(message);
             this.updateUI();
             if (this.game.isGameOver()) this.endGame();
             else this.processTurn();
           } else {
-            this.showMessage("🃏 У вас немає карт і в колоді більше немає карт.");
-            this.game.nextTurn(); this.processTurn();
+            this.showMessage(this.localize("playerNoCardsNoDeck"));
+            this.game.nextTurn();
+            this.processTurn();
           }
         } else {
-          this.showMessage("🃏 У вас немає карт і в колоді більше немає карт.");
-          this.game.nextTurn(); this.processTurn();
+          this.showMessage(this.localize("playerNoCardsNoDeck"));
+          this.game.nextTurn();
+          this.processTurn();
         }
       }
 
       processTurn() {
-        if (this.game.isGameOver()) { this.endGame(); return; }
+        if (this.game.isGameOver()) {
+          this.endGame();
+          return;
+        }
         if (this.game.getCurrentPlayer() === "Гравець") {
           this.resetRequestState();
           this.playerTurn();
@@ -727,7 +1130,10 @@
       playerTurn() {
         this.elements.botTurnInfo.style.display = 'none';
         this.elements.gameControls.style.display = 'block';
-        if (this.game.hands["Гравець"].length === 0) { this.handlePlayerNoCards(); return; }
+        if (this.game.hands["Гравець"].length === 0) {
+          this.handlePlayerNoCards();
+          return;
+        }
         this.updateUI();
         this.setupRankButtons();
       }
@@ -735,152 +1141,137 @@
       botTurn() {
         this.elements.gameControls.style.display = 'none';
         this.elements.botTurnInfo.style.display = 'block';
-        this.elements.botMessages.innerHTML = '<p>🤖 Бот обдумує свій хід...</p>';
-        setTimeout(()=>this.executeBotTurn(),1500);
+        this.elements.botMessages.innerHTML = `<p>${this.localize('botTurnThinking')}</p>`;
+        setTimeout(() => this.executeBotTurn(), 1500);
       }
 
       executeBotTurn() {
-        // логіка бота (без змін)...
-        // (копіюється з вашого коду — в інтересах читабельності сюди не вставляю повністю)
-        // Повна логіка вже є у наданому раніше коді — у цьому репо ми її зберігаємо.
-        // Щоб уникнути дублювання — припустимо, що executeBotTurn визначена вище повністю.
-        // У вашій реалізації вона вже присутня — нічого міняти не треба.
-        // Для коректності викликаємо простий fallback:
-        this.showBotMessage("🤖 Хід бота (логіка виконується)...");
-        // фактичний повний код executeBotTurn вже включено вище у довгому прикладі — він працює без змін.
-		const bot = "Бот";
-    const player = "Гравець";
-    
-    if (this.game.hands[bot].length === 0) {
-        if (this.game.deck.length > 0) {
+        const bot = "Бот";
+        const player = "Гравець";
+
+        if (this.game.hands[bot].length === 0) {
+          if (this.game.deck.length > 0) {
             const result = this.game.drawCard(bot);
-            let message = "🤖 У бота не було карт. ";
+            let message = `${this.localize("botNoCardsInHand")} `;
             if (result.success) {
-                message += `Бот отримав карту з колоди.`;
-                if (result.collected) {
-                    message += `<br>😱 Бот зібрав скриньку!`;
-                }
-                this.showBotMessage(message);
-                this.processTurn();
+              message += `${this.localize("botDrawsFromDeck")}.`;
+              if (result.collected) {
+                message += `<br>😱 ${this.localize("botCollectedBox", { rank: result.card.slice(0, -1) })}!`;
+              }
+              this.showBotMessage(message);
+              this.processTurn();
             }
-        } else {
-            this.showBotMessage("🤖 У бота немає карт і в колоді більше немає карт.");
+          } else {
+            this.showBotMessage(`${this.localize("botNoCardsInHand")} ${this.localize("deckEmpty")}.`);
             this.game.nextTurn();
             this.processTurn();
+          }
+          return;
         }
-        return;
-    }
-    
-    const availableRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        .filter(rank => !this.game.usedBoxes.has(rank));
-    
-    if (availableRanks.length === 0) {
-        this.showBotMessage("🤖 Усі скриньки вже зібрані!");
-        this.game.nextTurn();
-        this.processTurn();
-        return;
-    }
-    
-    const rank = availableRanks[Math.floor(Math.random() * availableRanks.length)];
-    this.game.addToHistory("bot", `Бот запитав карти ${rank}`);
-    
-    const playerCards = this.game.getPlayerCardsByRank(player, rank);
-    
-    if (playerCards.length === 0) {
-        const result = this.game.drawCard(bot);
-        
-        let message = `🤖 Бот запитує: "У вас є ${rank}?"<br>❌ У вас немає таких карт.<br>`;
-        
-        if (result.success) {
-            message += `📩 Бот отримав карту з колоди: ${result.card}`;
-            
+
+        const availableRanks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+          .filter(rank => !this.game.usedBoxes.has(rank));
+
+        if (availableRanks.length === 0) {
+          this.showBotMessage(this.localize("allBoxesCollected"));
+          this.game.nextTurn();
+          this.processTurn();
+          return;
+        }
+
+        const rank = availableRanks[Math.floor(Math.random() * availableRanks.length)];
+        this.game.addToHistory("bot", "botAsk", { rank });
+        const playerCards = this.game.getPlayerCardsByRank(player, rank);
+
+        if (playerCards.length === 0) {
+          const result = this.game.drawCard(bot);
+          let message = `${this.localize("botAsk", { rank })}<br>❌ ${this.localize("botNoCards")}.<br>`;
+          if (result.success) {
+            message += `${this.localize("botDrawsFromDeckMessage", { card: result.card })}`;
             if (result.collected) {
-                message += `<br>😱 Бот зібрав скриньку!`;
+              message += `<br>😱 ${this.localize("botCollectedBox", { rank: result.card.slice(0, -1) })}!`;
             }
-        } else {
-            message += `В колоді більше немає карт.`;
+          } else {
+            message += `${this.localize("noMoreCardsInDeck")}.`;
+          }
+          message += `<br>${this.localize("botBoxes")} ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
+          this.showBotMessage(message);
+          this.game.nextTurn();
+          this.processTurn();
+          return;
         }
-        
-        message += `<br>Його скриньки: ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
-        
-        this.showBotMessage(message);
-        this.game.nextTurn();
-        this.processTurn();
-        return;
-    }
-    
-    const count = Math.floor(Math.random() * Math.min(4, playerCards.length)) + 1;
-    this.game.addToHistory("bot", `Бот запитав ${count} карти ${rank}`);
-    
-    if (playerCards.length !== count) {
-        const result = this.game.drawCard(bot);
-        
-        let message = `🤖 Бот запитує: "У вас є ${count} ${rank}?"<br>❌ Насправді у вас ${playerCards.length} ${rank}.<br>`;
-        
-        if (result.success) {
-            message += `📩 Бот отримав карту з колоди: ${result.card}`;
-            
+
+        const count = Math.floor(Math.random() * Math.min(4, playerCards.length)) + 1;
+        this.game.addToHistory("bot", "botAskCount", { count, rank });
+
+        if (playerCards.length !== count) {
+          const result = this.game.drawCard(bot);
+          let message = `${this.localize("botAskCount", { count, rank })}<br>❌ ${this.localize("playerMistakeCount", { count: playerCards.length, rank })}.<br>`;
+          if (result.success) {
+            message += `${this.localize("botDrawsFromDeckMessage", { card: result.card })}`;
             if (result.collected) {
-                message += `<br>😱 Бот зібрав скриньку!`;
+              message += `<br>😱 ${this.localize("botCollectedBox", { rank: result.card.slice(0, -1) })}!`;
             }
-        } else {
-            message += `В колоді більше немає карт.`;
+          } else {
+            message += `${this.localize("noMoreCardsInDeck")}.`;
+          }
+          message += `<br>${this.localize("botBoxes")} ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
+          this.showBotMessage(message);
+          this.game.nextTurn();
+          this.processTurn();
+          return;
         }
-        
-        message += `<br>Його скриньки: ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
-        
+
+        const suitsToTake = [...new Set(playerCards.map(card => card.slice(-1)))];
+        const suitsText = suitsToTake.map(suit => {
+          const colorClass = suit === '♥' || suit === '♦' ? 'hearts' : 'clubs';
+          return `<span class="${colorClass}">${suit}</span>`;
+        }).join(', ');
+        this.game.addToHistory("bot", "botAskSuits", { count, rank, suits: suitsToTake.join(', ') });
+        const cardsTaken = this.game.takeCards(player, rank);
+        this.game.hands[bot].push(...cardsTaken);
+        const boxesBefore = this.game.boxes[bot];
+        this.game.checkBoxes(bot);
+
+        let message = `${this.localize("botGuessed", { cards: cardsTaken.join(', ') })}<br>`;
+        message += `${this.localize("yourNewCards", { cards: this.game.hands[player].sort().join(', ') })}<br>`;
+        message += `${this.localize("botBoxes")} ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
+
+        if (this.game.boxes[bot] > boxesBefore) {
+          const newBox = this.game.collectedBoxes[bot][this.game.collectedBoxes[bot].length - 1];
+          message += `<br>😱 ${this.localize("botCollectedBox", { rank: newBox })}!`;
+        }
         this.showBotMessage(message);
-        this.game.nextTurn();
-        this.processTurn();
-        return;
-    }
-    
-    // Оновлено: відображаємо всі масті, які бот забирає
-    const suitsToTake = [...new Set(playerCards.map(card => card.slice(-1)))];
-    const suitsText = suitsToTake.map(suit => {
-        const colorClass = suit === '♥' || suit === '♦' ? 'hearts' : 'clubs';
-        return `<span class="${colorClass}">${suit}</span>`;
-    }).join(', ');
-    
-    this.game.addToHistory("bot", `Бот запитав карти ${rank} мастей ${suitsToTake.join(', ')}`);
-    
-    const cardsTaken = this.game.takeCards(player, rank);
-    this.game.hands[bot].push(...cardsTaken);
-    
-    const boxesBefore = this.game.boxes[bot];
-    this.game.checkBoxes(bot);
-    
-    let message = `🤖 Бот запитує: "У вас є ${count} ${rank} мастей ${suitsText}?"<br>`;
-    message += `🎯 Бот вгадав! Ви віддаєте: ${cardsTaken.join(', ')}<br>`;
-    message += `📋 Ваші карти: ${this.game.hands[player].sort().join(', ')}<br>`;
-    message += `Скриньки бота: ${this.game.boxes[bot]} (${this.game.collectedBoxes[bot].join(', ')})`;
-    
-    if (this.game.boxes[bot] > boxesBefore) {
-        const newBox = this.game.collectedBoxes[bot][this.game.collectedBoxes[bot].length - 1];
-        message += `<br>😱 Бот зібрав скриньку ${newBox}!`;
-    }
-    
-    this.showBotMessage(message);
-    this.updateUI();
-    
-    if (this.game.isGameOver()) {
-        this.endGame();
-    } else {
-        this.processTurn();
-    }
-		
+        this.updateUI();
+
+        if (this.game.isGameOver()) {
+          this.endGame();
+        } else {
+          this.processTurn();
+        }
       }
 
-      showMessage(message) { this.elements.botMessages.innerHTML = `<p>${message}</p>`; }
-      showBotMessage(message) { this.elements.botMessages.innerHTML = `<p>${message}</p>`; }
+      showMessage(message) {
+        this.elements.botMessages.innerHTML = `<p>${message}</p>`;
+      }
+      showBotMessage(message) {
+        this.elements.botMessages.innerHTML = `<p>${message}</p>`;
+      }
 
       updateUI() {
-        this.elements.currentPlayer.textContent = this.telegramUser || this.game.getCurrentPlayer();
+        this.elements.currentPlayer.textContent = this.telegramUser || this.localize(this.game.getCurrentPlayer() === "Гравець" ? "player" : "bot");
         this.elements.playerBoxes.textContent = this.game.boxes["Гравець"];
         this.elements.playerBoxesList.textContent = this.game.collectedBoxes["Гравець"].join(', ');
         this.elements.botBoxes.textContent = this.game.boxes["Бот"];
         this.elements.botBoxesList.textContent = this.game.collectedBoxes["Бот"].join(', ');
         this.elements.deckCount.textContent = this.game.deck.length;
+        this.elements.selectedSuits.innerHTML = this.localize('selectedSuits') + ': ' +
+          this.selectedSuits.map(suit => {
+            const colorClass = suit === '♥' || suit === '♦' ? 'hearts' : 'clubs';
+            return `<span class="${colorClass}">${suit}</span>`;
+          }).join(', ');
+        this.elements.langSelect.value = this.lang;
+
 
         this.elements.playerCards.innerHTML = '';
         this.game.hands["Гравець"].sort().forEach(card => {
@@ -897,38 +1288,40 @@
 
       updateGameHistory() {
         this.elements.gameHistory.innerHTML = '';
-        this.game.gameHistory.forEach(entry=>{
+        this.game.gameHistory.forEach(entry => {
           const logEntry = document.createElement('div');
           logEntry.className = `log-entry ${entry.type}-log`;
-          logEntry.innerHTML = `<strong>[${entry.timestamp}]</strong> ${entry.message}`;
+          const message = this.localize(entry.messageKey, entry.replacements);
+          logEntry.innerHTML = `<strong>[${entry.timestamp}]</strong> ${message}`;
           this.elements.gameHistory.appendChild(logEntry);
         });
         this.elements.gameHistory.scrollTop = this.elements.gameHistory.scrollHeight;
       }
 
       endGame() {
-        const winner = Object.entries(this.game.boxes).reduce((a,b)=>a[1]>b[1]?a:b);
+        const winner = Object.entries(this.game.boxes).reduce((a, b) => a[1] > b[1] ? a : b);
         let resultHTML = `
-          <p>Результати:</p>
-          <p>Гравець: ${this.game.boxes["Гравець"]} (${this.game.collectedBoxes["Гравець"].join(', ')})</p>
-          <p>Бот: ${this.game.boxes["Бот"]} (${this.game.collectedBoxes["Бот"].join(', ')})</p>
-          <h3>Переможець: ${winner[0]}!</h3>
+          <p>${this.localize('results')}</p>
+          <p>${this.localize('player')}: ${this.game.boxes["Гравець"]} (${this.game.collectedBoxes["Гравець"].join(', ')})</p>
+          <p>${this.localize('bot')}: ${this.game.boxes["Бот"]} (${this.game.collectedBoxes["Бот"].join(', ')})</p>
+          <h3>${this.localize('winner')} ${this.localize(winner[0] === 'Гравець' ? 'player' : 'bot')}!</h3>
         `;
         this.elements.gameResult.innerHTML = resultHTML;
         this.openModal();
-        this.game.addToHistory("system", `Гра завершена! Переможець: ${winner[0]} з ${winner[1]} скриньками`);
+        this.game.addToHistory("system", "gameOverWinner", { winner: this.localize(winner[0] === 'Гравець' ? 'player' : 'bot'), boxes: winner[1] });
         this.updateGameHistory();
 
-        // Якщо WebApp — показати кнопку "Надіслати результат боту"
         if (tg) {
           this.elements.sendResultBtn.style.display = 'inline-block';
         }
-        // автоматично відправляємо результат у бота (опційно):
-        // this.sendResultToBot(); // <-- розкоментуйте, якщо хочете автоматично слати
       }
 
-      openModal(){ this.elements.gameOverModal.style.display = 'block'; }
-      closeModal(){ this.elements.gameOverModal.style.display = 'none'; }
+      openModal() {
+        this.elements.gameOverModal.style.display = 'block';
+      }
+      closeModal() {
+        this.elements.gameOverModal.style.display = 'none';
+      }
 
       resetRequestState() {
         this.elements.rankSelection.style.display = 'block';
@@ -939,10 +1332,9 @@
         delete this.game.playerState;
       }
 
-      // Функція, що відправляє підсумок гри боту через WebApp.sendData(...)
       sendResultToBot() {
         if (!tg) {
-          alert('WebApp API недоступний — сторінка не відкрита через Telegram.');
+          alert(this.localize('errorWebApp'));
           return;
         }
         const payload = {
@@ -955,22 +1347,21 @@
             botCollected: this.game.collectedBoxes["Бот"],
             deckLeft: this.game.deck.length
           },
-          history: this.game.gameHistory.slice(-20) // останні записи
+          history: this.game.gameHistory.slice(-20)
         };
         try {
           tg.sendData(JSON.stringify(payload));
-          // опційно показати повідомлення в UI
-          this.showMessage('Результат відправлено боту ✅');
+          this.showMessage(this.localize('resultSent'));
         } catch (e) {
           console.error('sendData error', e);
-          this.showMessage('Помилка при відправленні результату боту.');
+          this.showMessage(this.localize('errorSending'));
         }
       }
     }
 
-    // Ініціалізація UI після завантаження сторінки
+    let ui;
     document.addEventListener('DOMContentLoaded', () => {
-      const gameUI = new GameUI();
+      ui = new GameUI();
     });
   </script>
 </body>
