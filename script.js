@@ -32,7 +32,8 @@
             responseButtons: document.getElementById('response-buttons'),
             askingPlayerName: document.getElementById('asking-player-name'),
             askedCardRank: document.getElementById('asked-card-rank'),
-            currentPlayerName: document.getElementById('current-player-name') // Додано
+            currentPlayerName: document.getElementById('current-player-name'), // Додано
+			myGameName: document.getElementById('my-name') // ДОДАЙТЕ ЦЕЙ РЯДОК
         };
 
         if (tg) {
@@ -44,11 +45,12 @@
         elements.playerNameInput.value = telegramUser;
     } else {
         telegramUser = translateText('anonymous_player');
+           }
+    } else {
+        telegramUser = translateText('test_player');
     }
-} else {
-    telegramUser = translateText('test_player');
-}
-
+    elements.myGameName.textContent = `Ваш нік: ${telegramUser}`;
+    
 
 
         // Оновлена функція updateUI
