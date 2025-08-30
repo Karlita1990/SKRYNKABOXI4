@@ -5,52 +5,206 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Гра "Скриньки"</title>
   <style>
-    /* --- ваші стилі (без змін) --- */
+
+/* --- Адаптовані стилі --- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
     body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
+        font-family: 'Inter', sans-serif;
+        background-color: #1a1a2e;
+        color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
         padding: 20px;
-        background-color: #f5f5f5;
     }
     .game-container {
-        background-color: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        background-color: #2e2c4d;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        width: 90%;
+        max-width: 800px;
+    }
+    h1 {
+        font-size: 2.5rem;
+        color: #e94560;
+        margin-bottom: 20px;
+    }
+    h3 {
+        color: #e94560;
+        margin-top: 20px;
+    }
+    p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        margin: 10px 0;
+    }
+    button, .suit-btn {
+        background-color: #55a630;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 5px;
+        transition: background-color 0.3s ease;
+    }
+    button:hover, .suit-btn:hover {
+        background-color: #408823;
+    }
+    button:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+    .suit-btn {
+        font-size: 20px;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
     }
     .card {
-        display: inline-block;
-        padding: 5px 10px;
+        background-color: #e0e0e0;
+        border: 1px solid #4a4a6b;
+        border-radius: 8px;
+        padding: 8px;
+        width: 60px;
+        height: 80px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         margin: 5px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: white;
         cursor: pointer;
-        visibility: visible;
-        opacity: 1;
     }
     .card.selected {
-        background-color: #d4edda;
+        background-color: #55a630;
         border-color: #c3e6cb;
+        color: white;
     }
-    .hearts, .diamonds { color: red; }
-    .clubs, .spades { color: black; }
-    .controls { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
-    button { padding: 8px 15px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    button:disabled { background-color: #6c757d; cursor: not-allowed; }
-    .suit-btn { font-size: 20px; width: 40px; height: 40px; }
-    .game-info { margin-bottom: 20px; }
-    .box { display: inline-block; padding: 5px 10px; margin: 5px; border: 1px solid #17a2b8; border-radius: 5px; background-color: #d1ecf1; }
-    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px; text-align: center; }
-    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-    .close:hover { color: black; }
-    .game-log { margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; max-height: 200px; overflow-y: auto; }
-    .log-entry { margin: 5px 0; padding: 5px; border-bottom: 1px solid #eee; }
-    .player-log { color: #007bff; }
-    .bot-log { color: #dc3545; }
-    .system-log { color: #28a745; font-weight: bold; }
+    .hearts, .diamonds { 
+        color: #d32f2f; 
+    }
+    .clubs, .spades { 
+        color: #000000;
+    }
+    .card.selected.hearts, .card.selected.diamonds {
+        color: white;
+    }
+    .card.selected.clubs, .card.selected.spades {
+        color: white;
+    }
+
+    .box {
+        background-color: #e94560;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin: 5px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    #game-rules {
+        text-align: left;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: #12122b;
+        border: 1px solid #444;
+        margin-top: 20px;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    }
+    #game-rules ol {
+        padding-left: 20px;
+    }
+    #game-rules li {
+        margin-bottom: 10px;
+    }
+    .controls {
+        margin: 20px 0; 
+        padding: 20px; 
+        background-color: #12122b; 
+        border-radius: 12px;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    /* Журнал гри */
+    .game-log {
+        text-align: left;
+        max-height: 200px;
+        overflow-y: auto;
+        border-radius: 12px;
+        background-color: #12122b;
+        border: 1px solid #444;
+        padding: 10px;
+        margin-top: 20px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+    }
+    .log-entry {
+        margin: 5px 0;
+        padding: 4px 8px;
+        background-color: rgba(255,255,255,0.05);
+        border-left: 3px solid #e94560;
+    }
+    .player-log { 
+        color: #e0e0e0; 
+        border-left-color: #55a630;
+    }
+    .bot-log { 
+        color: #e0e0e0;
+        border-left-color: #e94560;
+    }
+    .system-log { 
+        color: #28a745; 
+        font-weight: bold;
+        border-left-color: #28a745;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+    .modal-content {
+        background-color: #2e2c4d;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #4a4a6b;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .close {
+        color: #e0e0e0;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close:hover {
+        color: #fff;
+    }
+	  
   </style>
 </head>
 <body>
